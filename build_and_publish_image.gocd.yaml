@@ -10,7 +10,7 @@ pipelines:
     materials:
       git:
         git: https://github.com/Chuazj/hello-kubernetes.git
-        shallow_clone: false
+        shallow_clone: true
         auto_update: true
         branch: master
     stages:
@@ -20,7 +20,6 @@ pipelines:
         clean_workspace: false
         approval:
           type: success
-          allow_only_on_success: false
         jobs:
           build_image:
             timeout: 0
