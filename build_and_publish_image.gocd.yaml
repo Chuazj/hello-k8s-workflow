@@ -1,7 +1,7 @@
 format_version: 3
 pipelines:
-  pipeline01:
-    group: sample
+  build_and_publish_image:
+    group: hello-k8s-app
     label_template: ${COUNT}
     lock_behavior: none
     display_order: 1
