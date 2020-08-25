@@ -36,7 +36,7 @@ pipelines:
                   EnvironmentVariablePrefix: ''
                   SkipImagePulling: 'true'
                 artifact_id: hello-kubernetes
-                pipeline: build_and_publish_image_hellok8s/build_and_publish_image
+                pipeline: build_and_publish_image_hellok8s
                 stage: build_and_publish_image
                 job: build_image
                 artifact_origin: external
