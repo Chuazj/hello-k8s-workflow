@@ -1,6 +1,6 @@
 format_version: 3
 pipelines:
-  deploy_to_cluster:
+  deploy_to_cluster_hellok8s:
     group: hello-k8s-app
     label_template: ${COUNT}
     lock_behavior: none
