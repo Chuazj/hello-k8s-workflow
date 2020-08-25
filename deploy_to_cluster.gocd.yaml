@@ -43,7 +43,6 @@ pipelines:
                 run_if: passed
             - exec:
                 arguments:
-                - cd /usr/src/app/
                 - ./app-deployment.sh
                 command: /bin/bash
                 run_if: passed
