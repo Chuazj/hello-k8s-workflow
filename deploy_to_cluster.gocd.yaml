@@ -44,6 +44,5 @@ pipelines:
                 run_if: passed
             - exec:
                 arguments:
-                - ./app-deployment.sh
-                command: /bin/bash
+                command: /bin/bash ./app-deployment.sh
                 run_if: passed
