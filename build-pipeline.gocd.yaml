@@ -1,0 +1,44 @@
+format_version: 3
+pipelines:
+  build-pipeline:
+    group: defaultGroup
+    label_template: ${COUNT}
+    lock_behavior: none
+    display_order: -1
+    materials:
+      git:
+        git: https://github.com/Chuazj/hello-kubernetes.git
+        shallow_clone: false
+        auto_update: true
+        branch: master
+    stages:
+    - build-stage:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: true
+        approval:
+          type: success
+          allow_only_on_success: false
+        jobs:
+          run-build-task:
+            timeout: 0
+            environment_variables:
+              DOCKERHUB_USERNAME: chuazj
+            artifacts:
+            - external:
+                id: hello-kubernetes
+                store_id: dockerhub
+                configuration:
+                  options:
+                    BuildFile: ''
+                    Tag: ${GO_PIPELINE_LABEL}.0
+                    Image: ${DOCKERHUB_USERNAME}/hello-kubernetes
+            tasks:
+            - exec:
+                arguments:
+                - -c
+                - docker build --no-cache --build-arg IMAGE_VERSION="1.8" --build-arg
+                  IMAGE_CREATE_DATE="`date -u +"%Y-%m-%dT%H:%M:%SZ"`" --build-arg
+                  IMAGE_SOURCE_REVISION="1.8" -f Dockerfile -t $DOCKERHUB_USERNAME/hello-kubernetes:$GO_PIPELINE_LABEL.0  app
+                command: /bin/bash
+                run_if: passed

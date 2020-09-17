@@ -1,0 +1,74 @@
+format_version: 3
+pipelines:
+  deploy-pipeline:
+    group: defaultGroup
+    label_template: ${COUNT}
+    lock_behavior: none
+    display_order: -1
+    materials:
+      BUILDLABEL:
+        ignore_for_scheduling: false
+        pipeline: build-pipeline
+        stage: build-stage
+      git:
+        git: https://github.com/Chuazj/hello-kubernetes.git
+        shallow_clone: false
+        auto_update: true
+        branch: master
+    stages:
+    - deploy-stage:
+        fetch_materials: true
+        keep_artifacts: false
+        clean_workspace: true
+        approval:
+          type: success
+          allow_only_on_success: true
+        jobs:
+          deploy-task:
+            timeout: 0
+            tasks:
+            - fetch:
+                options:
+                  EnvironmentVariablePrefix: ''
+                  SkipImagePulling: ''
+                artifact_id: hello-kubernetes
+                pipeline: build-pipeline
+                stage: build-stage
+                job: run-build-task
+                artifact_origin: external
+                run_if: passed
+            - exec:
+                arguments:
+                - -c
+                - echo LastPipelineBuild:$GO_DEPENDENCY_LABEL_BUILDLABEL
+                - varx=echo $GO_DEPENDENCY_LABEL_BUILDLABEL\
+                - echo ThenewVARX:$varx
+                command: /bin/bash
+                run_if: passed
+            - exec:
+                arguments:
+                - -c
+                - output=$(cat ./hello-kubernetes.yaml)
+                - echo $output
+                command: /bin/bash
+                run_if: passed
+            - exec:
+                arguments:
+                - -c
+                - vara=$GO_DEPENDENCY_LABEL_BUILDLABEL
+                - echo Thisis:$vara
+                command: /bin/bash
+                run_if: passed
+            - exec:
+                arguments:
+                - -c
+                - sed -i "s|chuazj/hello-kubernetes:1.0|chuazj/hello-kubernetes:$GO_DEPENDENCY_LABEL_BUILDLABEL.0|g"
+                  ./hello-kubernetes.yaml
+                command: /bin/bash
+                run_if: passed
+            - exec:
+                arguments:
+                - -c
+                - kubectl apply -f ./hello-kubernetes.yaml
+                command: /bin/bash
+                run_if: passed
